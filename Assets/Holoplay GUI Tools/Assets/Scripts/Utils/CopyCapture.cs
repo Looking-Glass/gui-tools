@@ -4,8 +4,6 @@ using UnityEngine;
 
 using HoloPlay;
 
-namespace Diorama {
-
 // When using multiple Holoplay captures, this class helps you keep a secondary capture's 
 // values synced up with the "main" capture.
 [ExecuteInEditMode]
@@ -36,6 +34,4 @@ public class CopyCapture : MonoBehaviour
         me.nearClipFactor = capture.nearClipFactor;
         me.farClipFactor = capture.farClipFactor;
     }
-}
-
 }

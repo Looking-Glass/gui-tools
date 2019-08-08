@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Diorama {
 public class FadeOutUI : MonoBehaviour
 {
 
@@ -77,5 +76,4 @@ public class FadeOutUI : MonoBehaviour
         fullscreen = true;
         OnFullscreenModeChange?.Invoke(fullscreen);
     }
-}
 }

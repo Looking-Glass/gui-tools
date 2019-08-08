@@ -5,8 +5,6 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-namespace Diorama
-{
 public class ConfirmDialog : MonoBehaviour
 {
 
@@ -58,5 +56,4 @@ public class ConfirmDialog : MonoBehaviour
         // TODO: Tween
         gameObject.SetActive(false);
     }
-}
 }

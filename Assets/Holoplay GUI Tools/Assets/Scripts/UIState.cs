@@ -7,8 +7,6 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Linq;
 
-namespace Diorama
-{
 public class UIState : MonoBehaviour
 {
     [System.Serializable]
@@ -168,5 +166,4 @@ public class UIState : MonoBehaviour
         SetOverlayColorAndActivate(new Color(0,0,0,0));
         TweenOverlayAlpha(0, 1, 0.4f).setOnComplete(() => { ChangeState(state); TweenOverlayAlpha(1,0,0.25f); });
     }
-}
 }

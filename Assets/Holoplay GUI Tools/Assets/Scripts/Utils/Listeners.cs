@@ -4,8 +4,6 @@ using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Diorama {
-
 public class Listeners {
     Dictionary<Button, UnityAction> callbacks = new Dictionary<Button, UnityAction>();
 
@@ -25,6 +23,4 @@ public class Listeners {
             pair.Key.onClick.RemoveListener(pair.Value);
         callbacks.Clear();
     }
-}
-
 }

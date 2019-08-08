@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Diorama
-{
     // Source: https://forum.unity.com/threads/radial-ui-layout-in-unity-code-included.355676/
     [ExecuteInEditMode]
     public class RadialLayoutGroup : LayoutGroup {
@@ -266,4 +264,3 @@ namespace Diorama
         }
  
     }
-}

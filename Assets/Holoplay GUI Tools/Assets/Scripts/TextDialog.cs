@@ -6,7 +6,6 @@ using TMPro;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Diorama {
 public class TextDialog : MonoBehaviour
 {
     public GameObject dialogParent;
@@ -210,5 +209,4 @@ public class TextDialog : MonoBehaviour
 
         textComponent.maxVisibleCharacters = totalVisibleCharacters;
     }
-}
 }

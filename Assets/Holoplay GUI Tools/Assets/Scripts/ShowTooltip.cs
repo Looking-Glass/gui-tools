@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Diorama {
 using TooltipPosition = TooltipManager.TooltipPosition;
 public class ShowTooltip : MonoBehaviour
 {
@@ -23,5 +22,4 @@ public class ShowTooltip : MonoBehaviour
         }
     }
 
-}
 }

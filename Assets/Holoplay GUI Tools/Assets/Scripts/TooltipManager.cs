@@ -5,8 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-namespace Diorama {
-
 public class TooltipManager : MonoBehaviour
 {
     public GameObject tooltip;
@@ -81,5 +79,4 @@ public class TooltipManager : MonoBehaviour
             tooltip.transform.position = p;
         }
     }
-}
 }
