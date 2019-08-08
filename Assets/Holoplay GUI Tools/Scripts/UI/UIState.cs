@@ -38,7 +38,8 @@ public class UIState : MonoBehaviour
     public Button TitleTutorialButton;
     public Button TitleCreditsButton;
     public Button BackButton;
-    public Button EditingPauseButton;
+    public Button GamePauseButton;
+    public Button PauseContinueButton;
     public Button PauseExitCreationButton;
 
     [Header("Misc")]
@@ -49,6 +50,13 @@ public class UIState : MonoBehaviour
 
     void OnEnable() {
         listeners = new Listeners();
+
+        groupTitle.SetActive(false);
+        groupPause.SetActive(false);
+        groupGame.SetActive(false);
+        groupBrowse.SetActive(false);
+        groupCredits.SetActive(false);
+        groupTutorial.SetActive(false);
 
         confirmDialog.Hide();
 
@@ -64,11 +72,11 @@ public class UIState : MonoBehaviour
         
         listeners.Add(BackButton, () => ChangeState(State.Title));
 
-        listeners.Add(EditingPauseButton, () => ChangeState(State.PauseMenu));
+        listeners.Add(GamePauseButton, () => ChangeState(State.PauseMenu));
 
         // Pause screen
         bool changesPresent = true; // TODO: implement your own
-
+        listeners.Add(PauseContinueButton, () => ChangeState(State.Game));
         listeners.Add(PauseExitCreationButton, () => {
             if (changesPresent) {
                 confirmDialog.Show(

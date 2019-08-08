@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6365977900014947184}
   - component: {fileID: 4667523693369725297}
   m_Layer: 5
-  m_Name: Background
+  m_Name: Background (Outline)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 4, y: 4}
+  m_SizeDelta: {x: 6, y: 6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5808589142996407902
 CanvasRenderer:
@@ -87,8 +87,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41679848b15c2d1408d7b90b7dcdaa8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  threshold: 0.5
-  smoothness: 0.2
+  threshold: 0
+  smoothness: 1
   material: {fileID: 2100000, guid: 4461d2f5d57a8b54ba48e3e372c940a7, type: 2}
 --- !u!1 &6286760087372461089
 GameObject:
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 5041652598846575192}
   - component: {fileID: 6287726903277213679}
   m_Layer: 5
-  m_Name: Background (1)
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -177,8 +177,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41679848b15c2d1408d7b90b7dcdaa8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  threshold: 0.5
-  smoothness: 0.2
+  threshold: 0
+  smoothness: 1
   material: {fileID: 2100000, guid: 4461d2f5d57a8b54ba48e3e372c940a7, type: 2}
 --- !u!1 &8050130579627038588
 GameObject:
@@ -402,7 +402,7 @@ MonoBehaviour:
   m_text: text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: deab8ffcaa0376244abb1cf9a2632664, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -427,7 +427,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 11.25
+  m_fontSize: 9.45
   m_fontSizeBase: 18.21
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -465,7 +465,7 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 1, z: 0, w: 1}
+  m_margin: {x: 0, y: 2, z: 0, w: 2}
   m_textInfo:
     textComponent: {fileID: 1063422808900802730}
     characterCount: 4
