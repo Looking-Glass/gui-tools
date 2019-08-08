@@ -9,23 +9,16 @@ using System.Text.RegularExpressions;
 namespace Diorama {
 public class TextDialog : MonoBehaviour
 {
-    public Button mouseBlocker;
-    public GameObject parent;
-    public GameObject characterParent;
     public GameObject dialogParent;
     public TextMeshProUGUI dialogText;
     public TextAsset dialogJson;
-
-    public GameObject parentRight;
-    public GameObject characterParentRight;
-    public GameObject dialogParentRight;
-    public TextMeshProUGUI dialogTextRight;
+    public bool resetSaveInEditor = true;
 
     DialogData dialog;
 
+    // Stores if we've shown the tutorial on PlayerPrefs
     public static class TutorialShowedStatus {
-
-        const string prefsPrefix = "contentCreatorSimulator";
+        const string prefsPrefix = "mygame";
 
         public static void ClearPrefForState(UIState.State state) => PlayerPrefs.DeleteKey(GetKey(state));
 
@@ -35,7 +28,10 @@ public class TextDialog : MonoBehaviour
         }
 
         public static bool ShowTutorialIfNeeded(UIState.State state, System.Action action) {
-            if (!Get(state)) {
+            //  show once, depending on the State
+            if (!Get(state) ||
+                // Always show the tutorial one tho
+                state == UIState.State.Tutorial) {
                 Set(state, true);
                 action?.Invoke();
                 return true;
@@ -68,71 +64,55 @@ public class TextDialog : MonoBehaviour
 
     }
 
+// Edit this structure to match your JSON dialog file
 #pragma warning disable 0649
     [System.Serializable]
     struct TutorialData {
         public string[] Title;
-        public string[] NewSceneMenu;
-        public string[] Editing;
-        public string[] ObjectSearch;
-        public string[] Browsing;
-        public string[] ConfirmPublish;
-        public string[] TutorialControls;
-        public string[] TutorialIntro;
+        public string[] Game;
+        public string[] Browse;
+        public string[] Tutorial;
 
         public string[] GetTutorialForState(UIState.State state) {
             switch(state) {
                 case UIState.State.Title:               return Title;
-                case UIState.State.Game:             return Editing;
-                case UIState.State.Tutorial:       return TutorialIntro;
+                case UIState.State.Browse:              return Browse;
+                case UIState.State.Game:                return Game;
+                case UIState.State.Tutorial:            return Tutorial;
             }
             return null;
         }
     }
     [System.Serializable]
     struct DialogData {
-        public TutorialData tutorial;
-        public string[] publish_reactions;
-        public string[] prompts;
-        public string[] phrase_endings;
+        public TutorialData tutorials;
     }
 #pragma warning restore 0649
 
     UIState uiState;
 
     void OnEnable() {
-        parent.SetActive(true);
-        parentRight.SetActive(true);
         dialog = JsonUtility.FromJson<DialogData>(dialogJson.text);
         uiState = FindObjectOfType<UIState>();
+        if (resetSaveInEditor)
+            TutorialShowedStatus.ClearAllStatePrefs();
 
         HideAll();
-        mouseBlocker.onClick.AddListener(OnBlockerClick);
 
         uiState.OnStateChanged += OnStateChanged;
     }
 
     void OnDisable() {
         uiState.OnStateChanged -= OnStateChanged;
-        mouseBlocker.onClick.RemoveListener(OnBlockerClick);
     }
 
     void HideAll() {
         dialogParent.SetActive(false);
-        characterParent.SetActive(false);
-        mouseBlocker.gameObject.SetActive(false);
-
-        dialogParentRight.SetActive(false);
-        characterParentRight.SetActive(false);
-    }
-
-    void OnBlockerClick() {
-        
     }
 
     void OnStateChanged(UIState.State state) {
         // check if we should start a dialog
-        TutorialShowedStatus.ShowTutorialIfNeeded(state, () => Show(state, dialog.tutorial.GetTutorialForState(state)));
+        TutorialShowedStatus.ShowTutorialIfNeeded(state, () => Show(state, dialog.tutorials.GetTutorialForState(state)));
     }
 
     public void Show(UIState.State state, string[] lines) { 
@@ -143,7 +123,6 @@ public class TextDialog : MonoBehaviour
     public void Show(UIState.State state, List<string> lines) {
         if (lines == null || lines.Count == 0)
             return;
-        // parse emoji whatever
         StartCoroutine(ShowLines(state, lines));
     }
 
@@ -164,50 +143,15 @@ public class TextDialog : MonoBehaviour
         return false;
     }
 
-    GameObject GetParent(UIState.State state) {
-        if (state == UIState.State.Tutorial)
-            return characterParentRight;
-        return characterParent;
-    }
-    GameObject GetDialogParent(UIState.State state) {
-        if (state == UIState.State.Tutorial)
-            return dialogParentRight;
-        return dialogParent;
-    }
-    TextMeshProUGUI GetText(UIState.State state) {
-        if (state == UIState.State.Tutorial)
-            return dialogTextRight;
-        return dialogText;
-    }
-
     IEnumerator ShowLines(UIState.State state, List<string> lines) {
-        yield return WaitForSecondsWithInterrupt(0.5f);
-        if (DidCancel()) {
-            OnTutorialEnd();
-            yield break;
-        }
-
-        GetParent(state).SetActive(true);
-        mouseBlocker.gameObject.SetActive(true);
-
-        yield return WaitForSecondsWithInterrupt(0.5f);
-        if (DidCancel()) {
-            OnTutorialEnd();
-            yield break;
-        }
-
-        GetDialogParent(state).SetActive(true);
+        dialogParent.SetActive(true);
         foreach(var l in lines) {
             if (CancelDialogDown) break;
             var line = l;
-            if (Random.value > .2f)
-                line += " " + dialog.phrase_endings.Pick();
             
-            line = ParseLine(line);
+            dialogText.text = line;
 
-            GetText(state).text = line;
-
-            yield return StartCoroutine(RevealCharacters(GetText(state)));
+            yield return StartCoroutine(RevealCharacters(dialogText));
             var t = Time.time;
             while (!SkipTextDown && !CancelDialogDown && Time.time - t < 6)
                 yield return null;
@@ -227,26 +171,6 @@ public class TextDialog : MonoBehaviour
         }
     }
 
-    const string CLOUD_COLOR = "#095092";
-    const string CONTENT_COLOR = "#e71ab9";
-    const int EMOJI_AMOUNT = 109;
-
-    string ParseLine(string line) {
-        line = Regex.Replace(line, @"cloud", SetTextColor("#CLOUD", CLOUD_COLOR));
-        line = Regex.Replace(line, @"#ContentCreator", SetTextColor("#ContentCreator", CONTENT_COLOR));
-        line = Regex.Replace(line, @"#content", SetTextColor("#content ", CONTENT_COLOR));
-        // emoji
-        line = Regex.Replace(line, @"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])", delegate(Match m) {
-            return string.Format("<sprite=\"emoji\" index={0}\">",Random.Range(0, EMOJI_AMOUNT));
-        });
-        
-        return line;
-    }
-    string SetTextColor(string text, string color) { 
-        return string.Format("<color={0}>{1}</color>", color, text);
-    }
-
-
     bool SkipTextDown { get => Input.GetMouseButtonDown(0); }
     bool CancelDialogDown { get => Input.GetKeyDown(KeyCode.Space); }
 
@@ -254,18 +178,15 @@ public class TextDialog : MonoBehaviour
     public float delayPerChar = .1f;
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.T)) {
-            if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) &&
-                (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {
-
-                Debug.Log("resetting tutorial state");
-                TutorialShowedStatus.ClearAllStatePrefs();
-
-            }
+        // Cheat code to reset tutorial settings
+        if (Application.isEditor && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.T)) {
+            Debug.Log("resetting tutorial state");
+            TutorialShowedStatus.ClearAllStatePrefs();
         }
     }
 
     IEnumerator RevealCharacters(TMP_Text textComponent) {
+        Debug.Log(textComponent);
         textComponent.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = textComponent.textInfo;
