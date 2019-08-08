@@ -186,6 +186,7 @@ public class TextDialog : MonoBehaviour
     }
 
     IEnumerator RevealCharacters(TMP_Text textComponent) {
+        Debug.Log(textComponent);
         textComponent.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = textComponent.textInfo;
