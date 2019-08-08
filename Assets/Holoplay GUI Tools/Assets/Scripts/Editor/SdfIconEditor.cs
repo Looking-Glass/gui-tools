@@ -20,6 +20,7 @@ public class SdfIconEditor : Editor {
     void DidGenerate(string assetPath)  {
         SDFTextureGeneratorWindow.DidGenerateSDFImage -= DidGenerate;
         var sdfIcon = target as SdfIcon;
+        if (!sdfIcon) return;
         var image = sdfIcon.GetComponent<UnityEngine.UI.Image>();
         if (image && !image.sprite) {
             var newSprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
