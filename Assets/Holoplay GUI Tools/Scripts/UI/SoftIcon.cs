@@ -165,7 +165,6 @@ public class SoftIcon : MonoBehaviour, IMaterialModifier
         lastInsideDistance = insideDistance;
         lastRgbFillMode = rgbFillMode;
     }
-#endif
 
     internal bool NeedsUpdate() {
         if (sourceTexture == null)
@@ -181,6 +180,7 @@ public class SoftIcon : MonoBehaviour, IMaterialModifier
             !Mathf.Approximately(lastOutsideDistance, outsideDistance) ||
             lastRgbFillMode != rgbFillMode;
     }
+#endif
 
     public Material GetModifiedMaterial(Material baseMaterial) {
         if (_modifiedMaterial == null)
