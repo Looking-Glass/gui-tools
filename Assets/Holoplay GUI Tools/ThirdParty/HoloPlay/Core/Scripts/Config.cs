@@ -319,9 +319,9 @@ namespace HoloPlay
             {
                 if (!GetConfigPathToFile(Path.Combine(configDirName, fileName), out filePath))
                 {
-#if UNITY_EDITOR_WIN
-                    if (Multidisplay.GetNumberOfDisplays() != 1)
-#endif
+// #if UNITY_EDITOR_WIN
+//                     if (Multidisplay.GetNumberOfDisplays() != 1)
+// #endif
                     Debug.LogWarning(Misc.debugLogText + "Config file not found!");
                 }
                 else

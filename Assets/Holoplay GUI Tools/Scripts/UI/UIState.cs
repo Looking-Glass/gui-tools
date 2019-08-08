@@ -16,58 +16,34 @@ public class UIState : MonoBehaviour
         Title,
         Game,
         PauseMenu,
-        Logo,
-        Tutorial
+        Browse,
+        Tutorial,
+        Credits
     }
 
     public State state = State.Game;
-
     public System.Action<State> OnStateChanged;
 
-    public ConfirmDialog confirmDialog;
+    [Header("Screens")]
+    public GameObject groupTitle;
+    public GameObject groupGame;
+    public GameObject groupPause;
+    public GameObject groupBrowse;
+    public GameObject groupTutorial;
+    public GameObject groupCredits;
 
-    public PopupItemGroup groupEditing;
-
-    [Header("Add menu")]
-    public PopupItemGroup groupAdd;
-
-    public Button AddBackButton;
-    public Button AddPauseButton;
-
-    [Header("Pause menu")]
-    public PopupItemGroup groupPause;
-    public Button PauseExitCreationButton;
-    public Button PauseBackButton;
-
-    [Header("Editing")]
+    [Header("Buttons")]
+    public Button TitleGameButton;
+    public Button TitleBrowseButton;
+    public Button TitleTutorialButton;
+    public Button TitleCreditsButton;
+    public Button BackButton;
     public Button EditingPauseButton;
-
-    [Header("Object Selected")]
-    public PopupItemGroup groupObjectSelected;
-    public Button EditingTrashButton;
-    public PopupItem trashBg;
-    public Button LockButton;
-    public Image LockButtonImg;
-    public Sprite LockButtonLockedSprite;
-    public Sprite LockButtonUnlockedSprite;
-    public Button FlipButton;
-
-    [Header("No object Selected")]
-    public PopupItemGroup groupNoObjectSelected;
-    public PopupItem undoButton;
-    public PopupItem redoButton;
-    public PopupItem doneButton;
-    public Button PublishButton;
-    public Button UnlockButton;
-    public Button LightingSettingsButton;
-
-    [Header("Title Screen")]
-    public GameObject TitleScreen;
-    public Button TitleScreenNewSceneButton;
-    public Button TitleScreenBrowseButton;
+    public Button PauseExitCreationButton;
 
     [Header("Misc")]
     public MeshRenderer BlackOverlay;
+    public ConfirmDialog confirmDialog;
 
     Listeners listeners;
 
@@ -80,10 +56,15 @@ public class UIState : MonoBehaviour
     }
 
     void RegisterButtonHandlers() {
-        // Editing
+
+        listeners.Add(TitleGameButton, () => ChangeState(State.Game));
+        listeners.Add(TitleBrowseButton, () => ChangeState(State.Browse));
+        listeners.Add(TitleTutorialButton, () => ChangeState(State.Tutorial));
+        listeners.Add(TitleCreditsButton, () => ChangeState(State.Credits));
+        
+        listeners.Add(BackButton, () => ChangeState(State.Title));
+
         listeners.Add(EditingPauseButton, () => ChangeState(State.PauseMenu));
-        listeners.Add(AddBackButton, () => ChangeState(State.Game));
-        listeners.Add(AddPauseButton, () => ChangeState(State.PauseMenu));
 
         // Pause screen
         bool changesPresent = true; // TODO: implement your own
@@ -99,12 +80,10 @@ public class UIState : MonoBehaviour
                 GoToTitleScreen();
             }
         });
-        
-        listeners.Add(PauseBackButton, () => ChangeState(State.Game));
     }
 
     void Start() {
-        ChangeState(State.Logo); // Setup initial state.
+        ChangeState(State.Title); // Setup initial state.
     }
 
     static internal ConfirmDialog GetConfirmDialog() {
@@ -135,18 +114,13 @@ public class UIState : MonoBehaviour
         var prevState = state;
         this.state = state;
 
-        groupEditing.gameObject.SetActive(state == State.Game);
-        groupPause.gameObject.SetActive(state == State.PauseMenu);
+        groupTitle.SetActive(state == State.Title);
+        groupPause.SetActive(state == State.PauseMenu);
+        groupGame.SetActive(state == State.Game);
+        groupBrowse.SetActive(state == State.Browse);
+        groupCredits.SetActive(state == State.Credits);
+        groupTutorial.SetActive(state == State.Tutorial);
 
-        TitleScreen.SetActive(state == State.Title);
-
-
-        // Clear scene on certain screens
-        switch (state) {
-            case State.Logo:
-                StartCoroutine(LookingGlassLogo());
-            break;
-        }
 
         confirmDialog.Hide();
 
@@ -180,25 +154,6 @@ public class UIState : MonoBehaviour
             BlackOverlay.gameObject.SetActive(true);
 
         return desc;
-    }
-
-    IEnumerator LookingGlassLogo() {
-        SetOverlayColorAndActivate(Color.black);
-
-        TweenOverlayAlpha(1f, 0f);
-
-        float t = 0, duration = 5;
-        while(t < duration) {
-            if (Input.GetMouseButtonDown(0))
-                t = duration;
-            t += Time.unscaledDeltaTime;
-            yield return 0;
-        }
-
-        TweenOverlayAlpha(0f, 1f).setOnComplete(() => {
-            ChangeState(State.Title);
-            TweenOverlayAlpha(1f, 0f);
-        });
     }
 
     public void FadeToState(State state) {

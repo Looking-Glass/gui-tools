@@ -85,7 +85,6 @@ public class TextDialog : MonoBehaviour
                 case UIState.State.Title:               return Title;
                 case UIState.State.Game:             return Editing;
                 case UIState.State.Tutorial:       return TutorialIntro;
-                case UIState.State.Logo: return null;
             }
             return null;
         }

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class ShowChildrenOnHover : MonoBehaviour {
 
-    public CanvasGroup button;
+    public GameObject button;
     public CanvasGroup children;
     public RectTransform hoverArea;
     public float scaleOnHover = 2.25f;
@@ -20,8 +20,8 @@ public class ShowChildrenOnHover : MonoBehaviour {
     public void ShowChildren() {
         float time = .2f;
         // Hover button
-        LeanTween.cancel(button.gameObject);
-        LeanTween.moveLocalZ(button.gameObject, 2, time).setEaseInOutCirc();
+        LeanTween.cancel(button);
+        LeanTween.moveLocalZ(button, 2, time).setEaseInOutCirc();
         // Show children
         LeanTween.cancel(children.gameObject);
         children.transform.localScale = Vector3.one * .75f;
@@ -38,8 +38,8 @@ public class ShowChildrenOnHover : MonoBehaviour {
     public void HideChildren() {
         float time = .2f;
         // Hover button
-        LeanTween.cancel(button.gameObject);
-        LeanTween.moveLocalZ(button.gameObject, 0, time).setEaseInOutCirc();
+        LeanTween.cancel(button);
+        LeanTween.moveLocalZ(button, 0, time).setEaseInOutCirc();
         // Hide children
         LeanTween.cancel(children.gameObject);
         LeanTween.scale(children.gameObject, Vector3.one, time).setEaseInOutCirc();

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6836620018809389711}
   - component: {fileID: 6983547152532125080}
   m_Layer: 5
-  m_Name: icon
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,6 @@ GameObject:
   - component: {fileID: 5843798578248186035}
   - component: {fileID: 5844335709937898969}
   - component: {fileID: 9145686471079192944}
-  - component: {fileID: 4472361425618488715}
   - component: {fileID: 4242969549536869585}
   m_Layer: 5
   m_Name: Icon Button
@@ -230,6 +229,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invertZ: 1
+  moveZ: 1
+  scaleAmount: {x: 1, y: 1, z: 1}
 --- !u!114 &9145686471079192944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,18 +245,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   text: More Results
   position: 0
---- !u!114 &4472361425618488715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5804004294765021377}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97eac349b978a4169a487416293ae623, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4242969549536869585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +272,7 @@ GameObject:
   - component: {fileID: 8848364252898954725}
   - component: {fileID: 7529533099108141138}
   m_Layer: 5
-  m_Name: Background (1)
+  m_Name: Background (Fill)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -329,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 4461d2f5d57a8b54ba48e3e372c940a7, type: 2}
-  m_Color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 1}
+  m_Color: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -373,7 +362,7 @@ GameObject:
   - component: {fileID: 7450157817891296461}
   - component: {fileID: 9221780125184937676}
   m_Layer: 5
-  m_Name: Background
+  m_Name: Background (Outline)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
