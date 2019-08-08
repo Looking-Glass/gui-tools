@@ -12,7 +12,23 @@ public class SdfIconEditor : Editor {
 
         EditorGUILayout.Space();
         if (GUILayout.Button("SDF Generator...", GUILayout.MaxWidth(175))) {
+            SDFTextureGeneratorWindow.DidGenerateSDFImage += DidGenerate;
             SDFTextureGeneratorWindow.OpenWindow();
         }
+    }
+
+    void DidGenerate(string assetPath)  {
+        SDFTextureGeneratorWindow.DidGenerateSDFImage -= DidGenerate;
+        var sdfIcon = target as SdfIcon;
+        var image = sdfIcon.GetComponent<UnityEngine.UI.Image>();
+        if (image && !image.sprite) {
+            var newSprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            image.sprite = newSprite;
+        }
+    }
+
+    
+    void OnDisable() {
+        SDFTextureGeneratorWindow.DidGenerateSDFImage -= DidGenerate;
     }
 }

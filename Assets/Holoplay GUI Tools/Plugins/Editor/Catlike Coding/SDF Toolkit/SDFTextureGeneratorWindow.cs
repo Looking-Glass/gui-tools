@@ -50,11 +50,12 @@ namespace CatlikeCoding.SDFToolkit.Editor {
 		float insideDistance = 3f, outsideDistance = 3f;
 		float postProcessDistance = 0f;
 		bool allowSave;
+        bool SaveAsSprite = true;
 		Vector2 scrollPosition;
 		
 		void OnEnable () {
 			source = Selection.activeObject as Texture2D;
-			rgbFillMode = (RGBFillMode)EditorPrefs.GetInt(rgbModeKey);
+			rgbFillMode = (RGBFillMode)EditorPrefs.GetInt(rgbModeKey, (int)RGBFillMode.Distance);
 			insideDistance = EditorPrefs.GetFloat(insideDistanceKey, 3f);
 			outsideDistance = EditorPrefs.GetFloat(outsideDistanceKey, 3f);
 			postProcessDistance = EditorPrefs.GetFloat(postProcessDistanceKey);
@@ -65,7 +66,8 @@ namespace CatlikeCoding.SDFToolkit.Editor {
 		}
 		
 		void OnGUI () {
-			GUILayout.BeginArea(new Rect(2f, 2f, 220f, position.height - 4f));
+            const float PAD = 2f;
+			GUILayout.BeginArea(new Rect(PAD, PAD, 220f, position.height - PAD * 2f));
 
 			EditorGUI.BeginChangeCheck();
 			source = (Texture2D)EditorGUILayout.ObjectField(sourceTextureContent, source, typeof(Texture2D), false);
@@ -114,7 +116,7 @@ namespace CatlikeCoding.SDFToolkit.Editor {
 
 			if (destination != null) {
 				scrollPosition = GUI.BeginScrollView(
-				new Rect(224f, 2f, position.width - 226f, position.height - 4f),
+				new Rect(224f, PAD, position.width - 226f, position.height - PAD * 2f),
 				scrollPosition,
 				new Rect(0f, 0f, destination.width, destination.height));
 				EditorGUI.DrawTextureAlpha(new Rect(0f, 0f, destination.width, destination.height), destination);
@@ -142,15 +144,20 @@ namespace CatlikeCoding.SDFToolkit.Editor {
 					filePath = filePath.Substring(relativeIndex);
 					TextureImporter importer = TextureImporter.GetAtPath(filePath) as TextureImporter;
 					if (importer != null) {
-						importer.textureType = TextureImporterType.SingleChannel;
+						importer.textureType = SaveAsSprite ? TextureImporterType.Sprite : TextureImporterType.SingleChannel;
 						importer.textureCompression = TextureImporterCompression.Uncompressed;
 						AssetDatabase.ImportAsset(filePath);
-						return;
+						//return;
 					}
 				}
-				Debug.LogWarning("Failed to setup exported texture as uncompressed single channel. You have to configure it manually.");
+				//Debug.LogWarning("Failed to setup exported texture as uncompressed single channel. You have to configure it manually.");
 			}
+
+            DidGenerateSDFImage?.Invoke(filePath);
 		}
+
+        public delegate void DidGenerateSDFImageCallback(string assetPath);
+        public static DidGenerateSDFImageCallback DidGenerateSDFImage;
 
 		void Generate () {
 			if (destination == null) {
