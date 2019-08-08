@@ -144,10 +144,10 @@ public class SoftIcon : MonoBehaviour, IMaterialModifier
             int relativeIndex = filePath.Replace("\\", "/").IndexOf("Assets/");
             if (relativeIndex >= 0) {
                 filePath = filePath.Substring(relativeIndex);
-                TextureImporter importer = TextureImporter.GetAtPath(filePath) as TextureImporter;
-                if (importer != null) {
-                    importer.textureType = TextureImporterType.SingleChannel;
-                    importer.textureCompression = TextureImporterCompression.Uncompressed;
+                TextureImporter _importer = TextureImporter.GetAtPath(filePath) as TextureImporter;
+                if (_importer != null) {
+                    _importer.textureType = TextureImporterType.SingleChannel;
+                    _importer.textureCompression = TextureImporterCompression.Uncompressed;
                     AssetDatabase.ImportAsset(filePath);
                 }
             }
