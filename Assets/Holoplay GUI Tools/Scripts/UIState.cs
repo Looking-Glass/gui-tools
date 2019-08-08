@@ -80,7 +80,7 @@ public class UIState : MonoBehaviour
         listeners.Add(PauseExitCreationButton, () => {
             if (changesPresent) {
                 confirmDialog.Show(
-                    "Your scene has unsaved changes. Are you sure?", 
+                    "Are you sure you want to quit?", 
                     "Wait", () => { confirmDialog.Hide(); },
                     "Confirm", GoToTitleScreen
                 );
