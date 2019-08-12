@@ -110,7 +110,7 @@ MonoBehaviour:
         texture: {fileID: 0}
         intensity: 3
   colorGrading:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       tonemapping:
         tonemapper: 1
@@ -342,7 +342,7 @@ MonoBehaviour:
     m_Enabled: 0
   monitors:
     currentMonitorID: 0
-    refreshOnPlay: 0
+    refreshOnPlay: 1
     histogramMode: 3
     waveformExposure: 0.12
     waveformY: 0

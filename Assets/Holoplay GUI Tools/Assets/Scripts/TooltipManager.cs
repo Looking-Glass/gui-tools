@@ -13,12 +13,6 @@ public class TooltipManager : MonoBehaviour
     public Vector3 offset = Vector3.up * 20;
     public bool moveToObject = true;
 
-    public enum TooltipPosition {
-        Upper,
-        Center,
-        Lower
-    }
-
     public static TooltipManager Instance;
 
     ShowTooltip lastInfo;
@@ -73,9 +67,7 @@ public class TooltipManager : MonoBehaviour
         text.text = text2.text = lastInfo.text;
         if (moveToObject) {
             var p = lastInfo.GetComponent<RectTransform>().position;
-            p += transform.TransformPoint(
-                offset * (lastInfo.position == TooltipPosition.Upper ? 1 : (lastInfo.position == TooltipPosition.Lower ? -1 : 0))
-            );
+            p += transform.TransformPoint(offset);
             tooltip.transform.position = p;
         }
     }

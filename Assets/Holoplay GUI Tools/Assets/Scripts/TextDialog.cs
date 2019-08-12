@@ -69,13 +69,11 @@ public class TextDialog : MonoBehaviour
     struct TutorialData {
         public string[] Title;
         public string[] Game;
-        public string[] Browse;
         public string[] Tutorial;
 
         public string[] GetTutorialForState(UIState.State state) {
             switch(state) {
                 case UIState.State.Title:               return Title;
-                case UIState.State.Browse:              return Browse;
                 case UIState.State.Game:                return Game;
                 case UIState.State.Tutorial:            return Tutorial;
             }
@@ -185,7 +183,6 @@ public class TextDialog : MonoBehaviour
     }
 
     IEnumerator RevealCharacters(TMP_Text textComponent) {
-        Debug.Log(textComponent);
         textComponent.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = textComponent.textInfo;

@@ -14,7 +14,6 @@ public class UIState : MonoBehaviour
         Title,
         Game,
         PauseMenu,
-        Browse,
         Tutorial,
         Credits
     }
@@ -26,13 +25,11 @@ public class UIState : MonoBehaviour
     public GameObject groupTitle;
     public GameObject groupGame;
     public GameObject groupPause;
-    public GameObject groupBrowse;
     public GameObject groupTutorial;
     public GameObject groupCredits;
 
     [Header("Buttons")]
     public Button TitleGameButton;
-    public Button TitleBrowseButton;
     public Button TitleTutorialButton;
     public Button TitleCreditsButton;
     public Button BackButton;
@@ -52,7 +49,6 @@ public class UIState : MonoBehaviour
         groupTitle.SetActive(false);
         groupPause.SetActive(false);
         groupGame.SetActive(false);
-        groupBrowse.SetActive(false);
         groupCredits.SetActive(false);
         groupTutorial.SetActive(false);
 
@@ -64,7 +60,6 @@ public class UIState : MonoBehaviour
     void RegisterButtonHandlers() {
 
         listeners.Add(TitleGameButton, () => ChangeState(State.Game));
-        listeners.Add(TitleBrowseButton, () => ChangeState(State.Browse));
         listeners.Add(TitleTutorialButton, () => ChangeState(State.Tutorial));
         listeners.Add(TitleCreditsButton, () => ChangeState(State.Credits));
         
@@ -123,7 +118,6 @@ public class UIState : MonoBehaviour
         groupTitle.SetActive(state == State.Title);
         groupPause.SetActive(state == State.PauseMenu);
         groupGame.SetActive(state == State.Game);
-        groupBrowse.SetActive(state == State.Browse);
         groupCredits.SetActive(state == State.Credits);
         groupTutorial.SetActive(state == State.Tutorial);
 

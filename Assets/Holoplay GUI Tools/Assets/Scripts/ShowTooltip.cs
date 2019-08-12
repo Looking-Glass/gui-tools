@@ -4,12 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-using TooltipPosition = TooltipManager.TooltipPosition;
 public class ShowTooltip : MonoBehaviour
 {
     public string text = "";
-    public TooltipPosition position = TooltipPosition.Upper;
-
     bool didEnable;
 
     void OnEnable() => didEnable = true;
