@@ -1,6 +1,5 @@
-# GUI Tools
+# Prefabs and tools for GUI design for the Looking Glass holographic display
 
-Prefabs and tools for GUI design for the Looking Glass holographic display.
 Includes prefabs for buttons and text that render well in the device, as well as a whole template with scripting for moving across different screens.
 
 Check out [our post](https://blog.lookingglassfactory.com/creating-a-holographic-ui-for-content-creator-simulator-fb98c9a61e5d) about this toolkit.
