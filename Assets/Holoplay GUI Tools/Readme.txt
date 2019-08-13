@@ -3,6 +3,9 @@
 Prefabs and tools for GUI design for the Looking Glass holographic display.
 Requires: Text Mesh Pro and (optionally) the Unity Post Processing package v1
 
+Check out the blogpost about this toolkit for more information:
+https://blog.lookingglassfactory.com/creating-a-holographic-ui-for-content-creator-simulator-fb98c9a61e5d
+
 
 HOW TO USE THE SDF ICON COMPONENT:
 
