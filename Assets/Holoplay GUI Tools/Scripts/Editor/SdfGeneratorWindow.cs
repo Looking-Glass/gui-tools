@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿// Copyright 2019 Looking Glass Factory Inc
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using CatlikeCoding.SDFToolkit;
 
+namespace LookingGlass
+{
 public class SdfGeneratorWindow : EditorWindow
 {
     [MenuItem("Window/SDF Generator")]
@@ -12,8 +15,8 @@ public class SdfGeneratorWindow : EditorWindow
     {
         // Get existing open window or if none, make a new one:
         var window = (SdfGeneratorWindow)EditorWindow.GetWindow(typeof(SdfGeneratorWindow));
-        window.minSize = new Vector2(100, 300);
-        window.maxSize = new Vector2(600, Screen.height);
+        // window.minSize = new Vector2(100, 300);
+        // window.maxSize = new Vector2(600, Screen.height);
         window.position = new Rect(100,100,Screen.width * .4f, Screen.height * .35f);
         window.Show();
 
@@ -79,6 +82,11 @@ public class SdfGeneratorWindow : EditorWindow
 
         var sourcePath = AssetDatabase.GetAssetPath(originalTex2D);
         var texImporter = TextureImporter.GetAtPath(sourcePath) as TextureImporter;
+        if (texImporter == null) {
+            // This happens if the texture is built-in to unity and not an asset
+            Debug.LogWarning("Couldn't locate the image. Try using an asset from inside your project.");
+            return;
+        }
 
         var compression = texImporter.textureCompression;
         bool uncompressed = compression == TextureImporterCompression.Uncompressed;
@@ -125,4 +133,5 @@ public class SdfGeneratorWindow : EditorWindow
         }
     }
 
+}
 }

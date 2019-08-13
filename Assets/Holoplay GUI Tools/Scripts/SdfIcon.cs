@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿// Copyright 2019 Looking Glass Factory Inc
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace LookingGlass
+{
 [RequireComponent(typeof(Image)), ExecuteInEditMode()]
 public class SdfIcon : MonoBehaviour, IMaterialModifier
 {
@@ -16,7 +19,8 @@ public class SdfIcon : MonoBehaviour, IMaterialModifier
 
     void OnEnable() {
         image = GetComponent<Image>();
-        _modifiedMaterial = Instantiate(material);
+        if (material)  
+            _modifiedMaterial = Instantiate(material);
     }
     
     void Update() {
@@ -36,4 +40,5 @@ public class SdfIcon : MonoBehaviour, IMaterialModifier
         if (image)
             image.SetMaterialDirty();
     }
+}
 }

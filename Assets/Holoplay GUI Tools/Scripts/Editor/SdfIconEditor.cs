@@ -1,7 +1,10 @@
+// Copyright 2019 Looking Glass Factory Inc
 using UnityEngine;
 using UnityEditor;
 using CatlikeCoding.SDFToolkit;
 
+namespace LookingGlass
+{
 [CustomEditor(typeof(SdfIcon)), CanEditMultipleObjects()]
 public class SdfIconEditor : Editor {
 
@@ -17,4 +20,5 @@ public class SdfIconEditor : Editor {
         }
     }
     
+}
 }

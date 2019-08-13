@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿// Copyright 2019 Looking Glass Factory Inc
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace LookingGlass
+{
 [ExecuteInEditMode()]
 public class RepeatRenderer : MonoBehaviour {
 
@@ -75,4 +78,5 @@ public class RepeatRenderer : MonoBehaviour {
         //Graphics.DrawMeshInstanced(mesh, 0, meshRenderer.sharedMaterial, _ms, mpr, shadowCastingMode, receiveShadows);
 
     }
+}
 }
