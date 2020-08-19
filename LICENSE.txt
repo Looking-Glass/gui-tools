@@ -1,0 +1,1 @@
+This repository is covered under the standard Looking Glass Factory license available here: https://lookingglassfactory.com/holoplay-sdk-license-agreement
