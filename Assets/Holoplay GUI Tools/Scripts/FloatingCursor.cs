@@ -33,9 +33,9 @@ public class FloatingCursor : MonoBehaviour {
         Cursor.visible = true;
     }
 	void Start () {
-        var c = FindObjectOfType<HoloPlay.Capture>();
+        var c = FindObjectOfType<Holoplay>();
         if (c)
-            cam = c.transform.GetChild(0).GetComponent<Camera>();
+            cam = c.cam;
         
 		
 	}

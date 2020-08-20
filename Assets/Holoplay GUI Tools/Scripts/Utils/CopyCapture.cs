@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using HoloPlay;
-
 namespace LookingGlass
 {
 // When using multiple Holoplay captures, this class helps you keep a secondary capture's 
@@ -12,12 +10,12 @@ namespace LookingGlass
 [ExecuteInEditMode]
 public class CopyCapture : MonoBehaviour
 {
-    public Capture capture;
+    public Holoplay capture;
     public bool copyTransform = true;
-    Capture me;
+    Holoplay me;
 
     void OnEnable() {
-        me = GetComponent<Capture>();
+        me = GetComponent<Holoplay>();
     }
 
     void Update()
@@ -32,8 +30,8 @@ public class CopyCapture : MonoBehaviour
             transform.localScale = t.localScale;
         }
 
-        me.Fov = capture.Fov;
-        me.Size = capture.Size;
+        me.cam.fieldOfView = capture.cam.fieldOfView;
+        me.size = capture.size;
         me.nearClipFactor = capture.nearClipFactor;
         me.farClipFactor = capture.farClipFactor;
     }
