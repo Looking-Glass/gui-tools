@@ -8,5 +8,7 @@ namespace LookingGlass
 public class EventCameraMarker : MonoBehaviour
 {
     // This component is just used as a marker.
+
+    public Camera cam { get { return Holoplay.Instance.cam; } }
 }
 }
