@@ -15,6 +15,9 @@ public class UseHoloplayOnCanvas : MonoBehaviour {
     /// <summary>
 
 	static internal Camera cam;
+    static internal int _lastCamGUID;
+
+    // public bool useTargetTexture = false;
 
     void Start() {
         if (Holoplay.Instance == null) {
@@ -22,7 +25,7 @@ public class UseHoloplayOnCanvas : MonoBehaviour {
             enabled = false;
             return;
         }
-        
+        DestroyCamera();
         if (!cam)
             CreateCamera();
     }
@@ -30,7 +33,7 @@ public class UseHoloplayOnCanvas : MonoBehaviour {
     void CreateCamera() {
         var hp = Holoplay.Instance;
         cam = new GameObject("UI Camera").AddComponent<Camera>();
-        cam.gameObject.hideFlags = HideFlags.HideAndDontSave;
+        cam.gameObject.hideFlags = HideFlags.DontSave;
         // cam.transform.SetParent(hp.transform);
         cam.transform.SetPositionAndRotation(
             hp.cam.transform.position + hp.cam.transform.forward * -hp.camDist, 
@@ -41,17 +44,51 @@ public class UseHoloplayOnCanvas : MonoBehaviour {
         cam.nearClipPlane = hp.cam.nearClipPlane;
         cam.farClipPlane = hp.cam.farClipPlane;
         cam.cullingMask = 0;
+        
+        cam.enabled = false;
+        _lastCamGUID = cam.gameObject.GetInstanceID();
+
+        // We assign a rendertexture to get to match viewport size to Holoplay size
+        // if (useTargetTexture) {
+        //     var uiRT = RenderTexture.GetTemporary(
+        //         Mathf.FloorToInt(hp.quiltSettings.viewWidth),
+        //         Mathf.FloorToInt(hp.quiltSettings.viewHeight)
+        //     );
+        //     cam.targetTexture = uiRT;
+        // }
 
         GetComponent<Canvas>().worldCamera = cam;
+    }
+
+    void DestroyCamera() {
+        var oldCam = GameObject.Find(_lastCamGUID.ToString());
+        if (oldCam) {
+            Debug.Log(oldCam);
+            cam = oldCam.GetComponent<Camera>();
+        }
+        if (cam == null)
+            return;
+        if (cam.targetTexture)
+            cam.targetTexture.Release();
+        if (Application.isPlaying)
+            Destroy(cam.gameObject);
+        else
+            DestroyImmediate(cam.gameObject);
+        _lastCamGUID = -1;
+        cam = null;
     }
 
     void Update() {
         if (!cam)
             CreateCamera();
-
+        
         var hp = Holoplay.Instance;
+        cam.fieldOfView = hp.cam.fieldOfView;
+        cam.nearClipPlane = hp.cam.nearClipPlane;
+        cam.farClipPlane = hp.cam.farClipPlane;
+
         cam.transform.SetPositionAndRotation(
-            hp.cam.transform.position + hp.cam.transform.forward * -hp.camDist, 
+            hp.cam.transform.position + hp.cam.transform.forward * -hp.GetCamDistance(), 
             hp.cam.transform.rotation
         );
     }
