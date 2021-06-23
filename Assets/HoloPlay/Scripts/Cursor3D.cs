@@ -2,6 +2,8 @@
 //All rights reserved.
 //Unauthorized copying or distribution of this file, and the source code contained herein, is strictly prohibited.
 
+#define USE_DEBUG_TEXTURE
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,7 +42,9 @@ namespace LookingGlass {
 		private bool overObject;
 
 		// debug texture
+		#if USE_DEBUG_TEXTURE
 		public RenderTexture debugTexture;
+		#endif
 
 		//Additions for UI cursor by Duncan
 		[SerializeField] GameObject uiCursor;
@@ -56,12 +60,19 @@ namespace LookingGlass {
 		public Quaternion GetRotation() { Update(); return rotation; }
 		public Quaternion GetLocalRotation() { Update(); return localRotation; }
 		public bool GetOverObject() { Update(); return overObject; }
+        public GameObject GetHoveredObject() { Update(); return HoveredGameObject; }
+
+        // object ID
+        public bool ObjectIDsEnabled = true;
+		Texture2D objectIDPixel;
+		int lastHoveredObjectID;
+        GameObject HoveredGameObject;
 
 		void Start() {
 			if (disableSystemCursor) Cursor.visible = false;
 			cursorGameObjectExists = cursorGameObject != null;
 			//Duncan addition for 2D UI
-			if(uiCursor != null){
+			if (uiCursor != null){
 				parentCanvas = uiCursor.GetComponentInParent<Canvas>();
 				rend = GetComponentInChildren<Renderer>();
 				InitializeCursor();
@@ -70,7 +81,7 @@ namespace LookingGlass {
 		}
 
 		//Duncan addition for 2D UI
-		void InitializeCursor(){
+		void InitializeCursor() {
 			Vector2 pos;
 
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -116,12 +127,47 @@ namespace LookingGlass {
 			depthNormals = new Texture2D( 1, 1, TextureFormat.ARGB32, false, true);
 			cursorCam = new GameObject("cursorCam").AddComponent<Camera>();
 			cursorCam.transform.SetParent(transform);
-			cursorCam.gameObject.hideFlags = HideFlags.HideAndDontSave;
+			//cursorCam.gameObject.hideFlags = HideFlags.HideAndDontSave;
+			cursorCam.gameObject.hideFlags = HideFlags.DontSave;
+
+            if (ObjectIDsEnabled) {
+                objectIDPixel = new Texture2D(1, 1, TextureFormat.RFloat, mipChain: false, linear: true);
+            }
 		}
 
 		void OnDisable() {
 			if (cursorCam.gameObject != null)
 				DestroyImmediate(cursorCam.gameObject);
+		}
+
+		// raw values from the depth buffer
+		float worldUnitsFromCamera;
+		Vector3 decodedViewNormal;
+		Vector2 mousePos01;
+
+		// state while locked
+		float lockedWorldUnitsFromCamera;
+		Vector3 lockedNormal;
+		Vector2 lockedMousePos01;
+
+		LockMode lockMode;
+
+		// the program can request that our 3D cursor "locks" in different ways
+		internal enum LockMode {
+			None,		// act normally
+			Depth,		// act normally, but stay at exactly the same depth value
+			XY,			// lock in X and Y
+			Y			// lock in Y
+		}
+
+		internal void SetLockMode(LockMode lockMode) {
+			this.lockMode = lockMode;
+			if (lockMode == LockMode.Depth) {
+				lockedWorldUnitsFromCamera = worldUnitsFromCamera;
+				lockedNormal = decodedViewNormal;
+			} else if (lockMode == LockMode.XY || lockMode == LockMode.Y) {
+				lockedMousePos01 = mousePos01;
+			}
 		}
 
 		void Update() {
@@ -138,9 +184,29 @@ namespace LookingGlass {
 				w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear, 1);
 			colorRT.filterMode = FilterMode.Point; // important to avoid some weird edge cases
 			colorRT.antiAliasing = 1;
+
+            RenderTexture objectIDRT = null;
+            RenderTexture objectIDPixelRT = null;
+            if (ObjectIDsEnabled) {
+                objectIDRT = RenderTexture.GetTemporary(
+                    w, h, 0, RenderTextureFormat.RFloat, RenderTextureReadWrite.Linear, 1);
+                objectIDRT.filterMode = FilterMode.Point;
+                objectIDPixelRT = RenderTexture.GetTemporary(1, 1, 0, RenderTextureFormat.RFloat, RenderTextureReadWrite.Linear);
+                objectIDPixelRT.filterMode = FilterMode.Point;
+            }
+
 			var depthNormalsRT = RenderTexture.GetTemporary(
 				1, 1, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
-			cursorCam.targetTexture = colorRT;
+
+            if (ObjectIDsEnabled) {
+                cursorCam.SetTargetBuffers(new RenderBuffer [] {
+                    colorRT.colorBuffer,
+                    objectIDRT.colorBuffer,
+                }, colorRT.depthBuffer);
+            } else {
+                cursorCam.targetTexture = colorRT;
+            }
+
 			cursorCam.allowMSAA = false;
 			float halfNormal = 0.5f;
 			Color bgColor = new Color(halfNormal, halfNormal, 1f, 1f);
@@ -156,7 +222,28 @@ namespace LookingGlass {
 					cursorGameObject.SetActive(false);
 				}
 			}
+
+
+            // Setup object IDs
+			if (ObjectIDsEnabled) {
+                Shader.EnableKeyword("OBJECT_IDS");
+				var mpr = new MaterialPropertyBlock();
+				foreach (var r in FindObjectsOfType<Renderer>()) {
+					float hoverFloat = r.gameObject.GetInstanceID();
+					//Debug.Log(hoverFloat + " " + r);
+					r.GetPropertyBlock(mpr);
+					mpr.SetFloat("objectID", hoverFloat);
+                    //Debug.Log($"objectID {hoverFloat} {r.gameObject}");
+					r.SetPropertyBlock(mpr);
+				}
+			} else {
+                Shader.DisableKeyword("OBJECT_IDS");
+            }
+
 			cursorCam.RenderWithShader(depthOnlyShader, "RenderType");
+            cursorCam.enabled = false;
+            cursorCam.targetTexture = null;
+
 			// turn cursor object back on
 			if (cursorGameObjectExists && cursorObjectEnabled) {
 				cursorGameObject.SetActive(true);
@@ -184,19 +271,55 @@ namespace LookingGlass {
 					monitorH = Display.displays[monitor].renderingHeight;
 				}
 			}
-			Vector2 mousePos01 = new Vector2(
+			mousePos01 = new Vector2(
 				mousePos.x / monitorW,
 				mousePos.y / monitorH);
+			if (lockMode == LockMode.XY)
+				mousePos01 = lockedMousePos01;
+			else if (lockMode == LockMode.Y)
+				mousePos01.y = lockedMousePos01.y;
+
 			readDepthPixelMat.SetVector("samplePoint", new Vector4(mousePos01.x, mousePos01.y));
 			Graphics.Blit(colorRT, depthNormalsRT, readDepthPixelMat);
+            #if USE_DEBUG_TEXTURE
 			if (debugTexture == null)
 				debugTexture = new RenderTexture(colorRT.width, colorRT.height, 0, colorRT.format, RenderTextureReadWrite.Linear);
 			Graphics.Blit(colorRT, debugTexture);
+            #endif
 			RenderTexture.active = depthNormalsRT;
 			depthNormals.ReadPixels(new Rect(0, 0, 1, 1), 0, 0, false);
 			depthNormals.Apply();
 			Color enc = depthNormals.GetPixel(0, 0);
 			// Debug.Log(enc.r + "r " + enc.g + "g");
+
+            if (ObjectIDsEnabled) {
+                // the second render target contains our object ids.
+                // here we blit the object id texture to a 1x1 texture, reading the
+                // pixel we're interested in.
+				Graphics.Blit(objectIDRT, objectIDPixelRT, readDepthPixelMat);
+
+				#if false
+				if (debugTexture == null)
+					debugTexture = new RenderTexture(objectIDRT.width, objectIDRT.height, 0, objectIDRT.format, RenderTextureReadWrite.Linear);
+				Graphics.Blit(objectIDRT, debugTexture);
+				#endif
+
+				RenderTexture.active = objectIDPixelRT;
+				objectIDPixel.ReadPixels(new Rect(0, 0, 1, 1), 0, 0, false);
+				objectIDPixel.Apply();
+				var objectIDCol = objectIDPixel.GetPixel(0, 0);
+				RenderTexture.active = null;
+
+				float hoverIndex = objectIDCol.r;
+                int objectID = (int)hoverIndex;
+				if (lastHoveredObjectID != objectID) {
+					lastHoveredObjectID = objectID;
+					var obj = UnityObjectHelper.FindObjectFromInstanceID(objectID);
+					HoveredGameObject = obj as GameObject;
+				}
+				// var hovered = PlaceableProp.GetForHoverIndex(hoverIndex);
+				// PropPlacer.Instance._SetCursor3DHovered(hovered);
+            }
 
 			// find world pos from depth
 			float depth = DecodeFloatRG(enc);
@@ -207,6 +330,9 @@ namespace LookingGlass {
 			// bool hit = true;
 			// depth = hit ? depth : 0.5f; // if nothing hit, default depth
 			depth = cursorCam.nearClipPlane + depth * (cursorCam.farClipPlane - cursorCam.nearClipPlane);
+			worldUnitsFromCamera = depth;
+			if (lockMode == LockMode.Depth)
+				depth = lockedWorldUnitsFromCamera;
 			Vector3 screenPoint = new Vector3(mousePos01.x, mousePos01.y, depth);
 			worldPos = cursorCam.ViewportToWorldPoint(screenPoint);
 			localPos = holoplay.transform.InverseTransformPoint(worldPos);
@@ -225,6 +351,10 @@ namespace LookingGlass {
 
 			// find world normal based on view normal
 			normal = DecodeViewNormalStereo(enc);
+			decodedViewNormal = normal;
+			if (lockMode == LockMode.Depth) {
+				normal = lockedNormal;
+            }
 			// normals = hit ? normals : Vector3.forward; // if nothing hit, default normal
 			normal = cursorCam.cameraToWorldMatrix * normal;
 			rotation = Quaternion.LookRotation(-normal);
@@ -239,6 +369,8 @@ namespace LookingGlass {
 			// reset settings
 			RenderTexture.ReleaseTemporary(colorRT);
 			RenderTexture.ReleaseTemporary(depthNormalsRT);
+			RenderTexture.ReleaseTemporary(objectIDRT);
+			RenderTexture.ReleaseTemporary(objectIDPixelRT);
 			// set frame rendered
 			frameRendered = true;
 		}
@@ -274,3 +406,27 @@ namespace LookingGlass {
 		//end
 	}
 }
+
+// Use a private Unity API to map instance ID back to Object.
+internal static class UnityObjectHelper
+{
+     private static System.Func<int, UnityEngine.Object> m_FindObjectFromInstanceID = null;
+
+     static UnityObjectHelper()
+     {
+         var methodInfo = typeof(UnityEngine.Object)
+             .GetMethod("FindObjectFromInstanceID",
+                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+         if (methodInfo == null)
+             Debug.LogError("FindObjectFromInstanceID was not found in UnityEngine.Object");
+         else
+             m_FindObjectFromInstanceID = (System.Func<int, UnityEngine.Object>)System.Delegate.CreateDelegate(typeof(System.Func<int, UnityEngine.Object>), methodInfo);
+     }
+
+     internal static UnityEngine.Object FindObjectFromInstanceID(int aObjectID)
+     {
+         if (m_FindObjectFromInstanceID == null)
+             return null;
+         return m_FindObjectFromInstanceID(aObjectID);
+     }
+ }

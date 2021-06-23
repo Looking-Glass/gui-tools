@@ -16,6 +16,18 @@ Shader "Holoplay/DepthOnly" {
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #pragma multi_compile __ OBJECT_IDS
+
+#ifdef OBJECT_IDS
+    struct MRTOut  {
+        float4 depthNormal : SV_Target0;
+        float objectID    : SV_Target1;
+    };
+    #define FRAG_OUTPUT MRTOut
+    float objectID;
+#else
+    #define FRAG_OUTPUT fixed4
+#endif
 
 			struct appdata {
 				float4 vertex : POSITION;
@@ -40,15 +52,27 @@ Shader "Holoplay/DepthOnly" {
                 o.worldNormal = mul((float3x3)UNITY_MATRIX_V, o.worldNormal);
                 return o;
             }
-            
-            fixed4 frag (v2f i) : SV_Target {
+
+            FRAG_OUTPUT frag (v2f i) : SV_Target {
+                fixed4 c = tex2D (_MainTex, i.uv);
+                if (c.a < 0.99) discard;
+
                 // get linear depth
                 float d = LinearEyeDepth(i.pos.z); // depth in unity units
                 float near = _ProjectionParams.y; 
                 float far = _ProjectionParams.z;
                 float ld = (d - near) / (far - near); // normalize it
                 // encode depth and normals
-                return EncodeDepthNormal(ld, i.worldNormal);
+                fixed4 depthNormal = EncodeDepthNormal(ld, i.worldNormal);
+
+#ifdef OBJECT_IDS
+                MRTOut o;
+                o.depthNormal = depthNormal;
+                o.objectID.r  = objectID;
+                return o;
+#else
+                return depthNormal;
+#endif
             }
             ENDCG
         }
