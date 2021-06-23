@@ -511,7 +511,10 @@ PrefabInstance:
       propertyPath: m_text
       value: '3D Cursor with Grabbing
 
-        <size=6>(Left Click to Drag)</size>'
+        <size=6>(Left Click to Drag)</size>
+
+        <size=6>(Right
+        Click to Move Forward and Back)</size>'
       objectReference: {fileID: 0}
     - target: {fileID: 2237616238637857009, guid: ca2c3d3aad5ee7d4d90a838c7e06c18d,
         type: 3}
@@ -568,7 +571,10 @@ PrefabInstance:
       propertyPath: m_text
       value: '3D Cursor with Grabbing
 
-        <size=6>(Left Click to Drag)</size>'
+        <size=6>(Left Click to Drag)</size>
+
+        <size=6>(Right
+        Click to Move Forward and Back)</size>'
       objectReference: {fileID: 0}
     - target: {fileID: 2237616239440341948, guid: ca2c3d3aad5ee7d4d90a838c7e06c18d,
         type: 3}
@@ -620,7 +626,10 @@ PrefabInstance:
       propertyPath: m_text
       value: '3D Cursor with Grabbing
 
-        <size=6>(Left Click to Drag)</size>'
+        <size=6>(Left Click to Drag)</size>
+
+        <size=6>(Right
+        Click to Move Forward and Back)</size>'
       objectReference: {fileID: 0}
     - target: {fileID: 2237616239683269579, guid: ca2c3d3aad5ee7d4d90a838c7e06c18d,
         type: 3}
@@ -3672,6 +3681,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8908108430789436102}
   - component: {fileID: 8905150524438343933}
+  - component: {fileID: 8905150524438343934}
   m_Layer: 2
   m_Name: 3D Cursor
   m_TagString: Untagged
@@ -3698,6 +3708,18 @@ MonoBehaviour:
   uiCursor: {fileID: 0}
   uiCursorMode: 0
   ObjectIDsEnabled: 1
+--- !u!114 &8905150524438343934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8905150524438343932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e07e142200bba494fabf13d884ddb2d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8907642868855952252
 Transform:
   m_ObjectHideFlags: 0
