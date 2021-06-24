@@ -7,23 +7,22 @@ An example class for manipulating objects in the scene by dragging them (using C
 */
 
 [RequireComponent(typeof(Cursor3D))]
-class ObjectManipulation : MonoBehaviour {
+public class ObjectManipulation : MonoBehaviour {
     const float Z_DRAG_SPEED = 0.003f;
-
-    internal enum DragMode {
-        MovingInXZ,
-        MovingInXY,
-    }
-
     Cursor3D cursor;
-    DragMode dragMode;
+    CursorDragMode dragMode;
     Vector3 originalCursorWorldPos;
     Vector3 originalPos;
     Vector2 originalMousePos;
     GameObject draggingGameObject;
+    CursorVisuals cursorVisuals;
+
+    public bool IsDragging { get => draggingGameObject != null; }
+    public CursorDragMode DragMode { get => dragMode; }
 
     void OnEnable() {
         cursor = GetComponent<Cursor3D>();
+        cursorVisuals = GetComponent<CursorVisuals>();
     }
 
     void Update() {
@@ -38,13 +37,13 @@ class ObjectManipulation : MonoBehaviour {
 
             // Drag in and out of the screen if using the right mouse button, or holding shift.
             var shiftDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-            dragMode = (shiftDown || rightDownThisFrame) ? DragMode.MovingInXZ : DragMode.MovingInXY;
+            dragMode = (shiftDown || rightDownThisFrame) ? CursorDragMode.MovingInXZ : CursorDragMode.MovingInXY;
 
             originalPos = draggingGameObject.transform.position;
             originalCursorWorldPos = cursor.GetWorldPos();
             originalMousePos = Input.mousePosition;
 
-            cursor.SetLockMode(dragMode == DragMode.MovingInXY ? Cursor3D.LockMode.Depth : Cursor3D.LockMode.Y);
+            cursor.SetLockMode(dragMode == CursorDragMode.MovingInXY ? Cursor3D.LockMode.Depth : Cursor3D.LockMode.Y);
 
             Debug.Log(dragMode + " " + draggingGameObject);
         }
@@ -58,13 +57,11 @@ class ObjectManipulation : MonoBehaviour {
 
         // Update an object being dragged.
         if (draggingGameObject) {
-            if (dragMode == DragMode.MovingInXY) {
+            if (dragMode == CursorDragMode.MovingInXY) {
                 var newPos = originalPos + (cursor.GetWorldPos() - originalCursorWorldPos);
-                newPos.z = originalPos.z;
                 draggingGameObject.transform.position = newPos;
-            } else if (dragMode == DragMode.MovingInXZ) {
+            } else if (dragMode == CursorDragMode.MovingInXZ) {
                 var newPos = originalPos + (cursor.GetWorldPos() - originalCursorWorldPos);
-                newPos.y = originalPos.y;
                 newPos.z = originalPos.z + (Input.mousePosition.y - originalMousePos.y) * Z_DRAG_SPEED;
                 draggingGameObject.transform.position = newPos;
             }

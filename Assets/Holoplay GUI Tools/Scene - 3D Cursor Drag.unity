@@ -2128,6 +2128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a783d708821e6a4eae14662763ad106, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectManipulation: {fileID: 8905150524438343934}
   arrowModel: {fileID: 8903923853372393924}
   hoveringModel: {fileID: 1013788628}
   grabModel: {fileID: 8903923853942293600}
@@ -2137,9 +2138,6 @@ MonoBehaviour:
   easeRotation: 0
   rotateSpeed: 0.2
   clampAngle: {x: 0, y: 0, z: 0}
-  IsDragging: 0
-  IsHovering: 0
-  dragMode: 0
 --- !u!1 &1749751691
 GameObject:
   m_ObjectHideFlags: 0

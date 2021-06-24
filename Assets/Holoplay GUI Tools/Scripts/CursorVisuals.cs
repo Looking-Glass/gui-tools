@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LookingGlass {
+/*
+An example class pairing with ObjectManipulation to change the 3D cursor's
+visuals depending on what the user is doing (dragging, hovering).
+*/
 public class CursorVisuals : MonoBehaviour
 {
+    public ObjectManipulation objectManipulation;
+
     [Header("References")]
     public GameObject arrowModel;
     public GameObject hoveringModel;
@@ -17,13 +23,6 @@ public class CursorVisuals : MonoBehaviour
     public bool easeRotation = true;
     public float rotateSpeed = 0.2f;
     public Vector3 clampAngle = new Vector3(0,0,0);
-
-    // TODO: Use EventSystem to toggle these
-    [Header("Debug")]
-    public bool IsDragging = false;
-    public bool IsHovering = false;
-    public enum DragMode { MovingInXY, MovingInXZ }
-    public DragMode dragMode;
 
     // private
     Vector3 finalPosition;
@@ -45,18 +44,22 @@ public class CursorVisuals : MonoBehaviour
     {
         if (!Cursor3D.Instance)
             return;
+        
+        var isHovering = Cursor3D.Instance.GetHoveredObject() != null;
+        var isDragging = objectManipulation != null && objectManipulation.IsDragging;
+        var dragMode = objectManipulation != null ? objectManipulation.DragMode : CursorDragMode.MovingInXY;
 
         // Cursor visibility
-        if (!IsDragging) {
-            arrowModel.SetActive(!IsHovering);
-            hoveringModel.SetActive(IsHovering);
+        if (!isDragging) {
+            arrowModel.SetActive(!isHovering);
+            hoveringModel.SetActive(isHovering);
             grabModel.SetActive(false);
             grabZModel.SetActive(false);
         } else {
             arrowModel.SetActive(false);
             hoveringModel.SetActive(false);
-            grabModel.SetActive(dragMode == DragMode.MovingInXY);
-            grabZModel.SetActive(dragMode == DragMode.MovingInXZ);
+            grabModel.SetActive(dragMode == CursorDragMode.MovingInXY);
+            grabZModel.SetActive(dragMode == CursorDragMode.MovingInXZ);
         }
 
         // Cursor position with easing

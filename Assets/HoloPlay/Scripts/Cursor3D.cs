@@ -9,6 +9,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LookingGlass {
+
+    public enum CursorDragMode {
+        MovingInXZ,
+        MovingInXY,
+    }
+
     [HelpURL("https://docs.lookingglassfactory.com/Unity/Scripts/Cursor3D/")]
 	public class Cursor3D : MonoBehaviour {
 
@@ -338,7 +344,6 @@ namespace LookingGlass {
 			localPos = holoplay.transform.InverseTransformPoint(worldPos);
 			if (isActiveAndEnabled)
 				transform.position = worldPos;
-
 
 			//Duncan addition for 2D UI
 			if(uiCursor != null){
